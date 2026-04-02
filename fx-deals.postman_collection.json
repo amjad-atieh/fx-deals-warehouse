@@ -1,0 +1,89 @@
+{
+    "info": {
+        "name": "FX Deals API",
+        "description": "API collection for importing and retrieving FX deals in the warehouse.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Import Single Deal",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"dealUniqueId\": \"DEAL-001\",\n  \"fromCurrencyIsoCode\": \"USD\",\n  \"toCurrencyIsoCode\": \"EUR\",\n  \"dealTimestamp\": \"2023-10-01T12:30:00\",\n  \"dealAmount\": 1500.50\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:8080/api/deals",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "api",
+                        "deals"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Import Batch Deals",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "[\n  {\n    \"dealUniqueId\": \"DEAL-002\",\n    \"fromCurrencyIsoCode\": \"GBP\",\n    \"toCurrencyIsoCode\": \"USD\",\n    \"dealTimestamp\": \"2023-10-02T10:00:00\",\n    \"dealAmount\": 5000.00\n  },\n  {\n    \"dealUniqueId\": \"DEAL-003\",\n    \"fromCurrencyIsoCode\": \"EUR\",\n    \"toCurrencyIsoCode\": \"JPY\",\n    \"dealTimestamp\": \"2023-10-02T10:15:00\",\n    \"dealAmount\": 2000.75\n  }\n]"
+                },
+                "url": {
+                    "raw": "http://localhost:8080/api/deals/batch",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "api",
+                        "deals",
+                        "batch"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Deal By Unique ID",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8080/api/deals/DEAL-001",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8080",
+                    "path": [
+                        "api",
+                        "deals",
+                        "DEAL-001"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ]
+}
