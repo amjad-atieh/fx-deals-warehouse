@@ -7,7 +7,6 @@ import com.bloomberg.fxdeals.dto.DealStatus;
 import com.bloomberg.fxdeals.entity.Deal;
 import com.bloomberg.fxdeals.exception.DealNotFoundException;
 import com.bloomberg.fxdeals.repository.DealRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,12 +46,6 @@ class DealServiceTest {
 
     @InjectMocks
     private DealService dealService;
-
-    @BeforeEach
-    void setUp() {
-        // Any common setup can be placed here.
-        // MockitoExtension ensures mocks are initialized before each test.
-    }
 
     // --- Helper Methods for Test Data ---
 
