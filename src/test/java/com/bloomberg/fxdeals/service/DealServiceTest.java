@@ -330,6 +330,40 @@ class DealServiceTest {
         verify(dealRepository, times(2)).saveAndFlush(any(Deal.class));
     }
 
+    @Test
+    @DisplayName("Batch import: partial failure (unexpected exception in pre-check)")
+    void shouldProcessBatchDeals_whenPreCheckThrowsException() {
+        // Given
+        DealRequest validReq = createValidDealRequest("BAD-003", "USD", "EUR", LocalDateTime.now(), new BigDecimal("100.00"));
+        DealRequest failingReq = createValidDealRequest("BAD-004", "GBP", "USD", LocalDateTime.now(), new BigDecimal("200.00"));
+
+        List<DealRequest> requests = Arrays.asList(validReq, failingReq);
+
+        when(dealRepository.existsByDealUniqueId("BAD-003")).thenReturn(false);
+        when(dealRepository.existsByDealUniqueId("BAD-004")).thenThrow(new RuntimeException("DB Connection Dropped"));
+
+        when(dealRepository.saveAndFlush(Mockito.argThat(d -> d != null && "BAD-003".equals(d.getDealUniqueId())))).thenAnswer(inv -> {
+            Deal d = inv.getArgument(0);
+            d.setId(1L);
+            return d;
+        });
+
+        // When
+        BatchImportResult result = dealService.importBatchDeals(requests);
+
+        // Then
+        assertThat(result.totalReceived()).isEqualTo(2);
+        assertThat(result.succeeded()).isEqualTo(1);
+        assertThat(result.duplicates()).isEqualTo(0);
+        assertThat(result.failures()).isEqualTo(1);
+
+        assertThat(result.details()).hasSize(2);
+        assertThat(result.details().get(0).status()).isEqualTo(DealStatus.SAVED);
+        assertThat(result.details().get(1).status()).isEqualTo(DealStatus.ERROR);
+
+        verify(dealRepository, times(1)).saveAndFlush(any(Deal.class));
+    }
+
     /**
      * Tests batch deal functionality against extremely small/empty workloads.
      */
