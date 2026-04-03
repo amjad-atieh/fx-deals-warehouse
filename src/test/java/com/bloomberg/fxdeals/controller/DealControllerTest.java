@@ -10,9 +10,12 @@ import com.bloomberg.fxdeals.service.DealService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,15 +23,11 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import tools.jackson.databind.ObjectMapper;
-
-//@org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest
 @WebMvcTest(DealController.class)
 class DealControllerTest {
 
@@ -38,7 +37,7 @@ class DealControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockitoBean
+    @MockBean
     private DealService dealService;
 
     @Test
@@ -107,7 +106,7 @@ class DealControllerTest {
         deal.setToCurrencyIsoCode("EUR");
         deal.setDealAmount(BigDecimal.TEN);
         deal.setDealTimestamp(LocalDateTime.now());
-        
+
         when(dealService.getDealByUniqueId("123")).thenReturn(deal);
 
         mockMvc.perform(get("/api/deals/123"))

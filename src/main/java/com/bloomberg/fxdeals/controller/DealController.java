@@ -41,7 +41,7 @@ public class DealController {
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<BatchImportResult> importBatchDeals(@RequestBody @Valid List<@Valid DealRequest> requests) {
+    public ResponseEntity<BatchImportResult> importBatchDeals(@RequestBody java.util.List<DealRequest> requests) {
         BatchImportResult result = dealService.importBatchDeals(requests);
         return ResponseEntity.ok(result);
     }

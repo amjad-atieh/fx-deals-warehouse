@@ -288,6 +288,7 @@ class DealServiceTest {
         // No save for B-002
         inOrder.verify(dealRepository).existsByDealUniqueId("B-003");
         inOrder.verify(dealRepository).saveAndFlush(any(Deal.class));
+
     }
 
     /**

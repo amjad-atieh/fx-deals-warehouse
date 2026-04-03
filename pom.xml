@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.0-M4</version>
+		<version>3.4.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bloomberg</groupId>
 	<artifactId>fxdeals</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name/>
 	<description/>
 	<url/>
@@ -30,6 +30,26 @@
 		<java.version>25</java.version>
 	</properties>
 	<dependencies>
+<dependency>
+<groupId>com.h2database</groupId>
+<artifactId>h2</artifactId>
+<scope>test</scope>
+</dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -46,18 +66,24 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
+        <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-webflux</artifactId>
+                <scope>test</scope>
+        </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-webmvc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-webmvc-test</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -69,15 +95,22 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-    <dependency>
-        <groupId>tools.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <scope>compile</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test-autoconfigure</artifactId>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-surefire-plugin</artifactId>
+<configuration>
+<argLine>@{argLine} -Dnet.bytebuddy.experimental=true</argLine>
+</configuration>
+</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
