@@ -28,7 +28,7 @@ test:
 	mvn test
 
 coverage:
-	mvn clean test jacoco:report
+	mvn clean verify
 	@echo "Coverage report: target/site/jacoco/index.html"
 
 clean:
