@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doThrow;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import com.bloomberg.fxdeals.service.DealService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -33,6 +37,9 @@ class DealControllerIntegrationTest {
 
     @Autowired
     private DealRepository dealRepository;
+
+    @SpyBean
+    private DealService dealService;
 
     @BeforeEach
     void setUp() {
@@ -253,5 +260,37 @@ class DealControllerIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().message()).containsIgnoringCase("NON-EXISTENT").containsIgnoringCase("not find");
+    }
+
+    @Test
+    @DisplayName("Batch Import - Unexpected exception does not roll back previous successes")
+    void shouldNotRollbackWhenUnexpectedExceptionOccurs() {
+        // Given
+        DealRequest deal1 = new DealRequest("NO-ROLLBACK-1", "USD", "EUR", LocalDateTime.now(), BigDecimal.valueOf(100));
+        DealRequest deal2 = new DealRequest("NO-ROLLBACK-2", "GBP", "USD", LocalDateTime.now(), BigDecimal.valueOf(200));
+        DealRequest deal3 = new DealRequest("NO-ROLLBACK-3", "EUR", "JPY", LocalDateTime.now(), BigDecimal.valueOf(300));
+
+        // Stub the service to throw RuntimeException for deal2
+        doThrow(new RuntimeException("Simulated DB connection failure"))
+            .when(dealService).importSingleDeal(argThat(req -> "NO-ROLLBACK-2".equals(req.dealUniqueId())));
+        
+        // When
+        ResponseEntity<BatchImportResult> response = restTemplate.postForEntity(
+            "/api/deals/batch",
+            List.of(deal1, deal2, deal3),
+            BatchImportResult.class
+        );
+
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        BatchImportResult result = response.getBody();
+        assertThat(result.succeeded()).isEqualTo(2);
+        assertThat(result.failures()).isEqualTo(1);
+        assertThat(result.duplicates()).isZero();
+
+        // Verify database: deal1 and deal3 exist, deal2 does not
+        assertThat(dealRepository.existsByDealUniqueId("NO-ROLLBACK-1")).isTrue();
+        assertThat(dealRepository.existsByDealUniqueId("NO-ROLLBACK-2")).isFalse();
+        assertThat(dealRepository.existsByDealUniqueId("NO-ROLLBACK-3")).isTrue();
     }
 }
