@@ -25,13 +25,13 @@ logs:
 	docker-compose logs -f
 
 test:
-	mvn test
+	./mvnw test
 
 coverage:
-	mvn clean verify
+	./mvnw clean verify
 	@echo "Coverage report: target/site/jacoco/index.html"
 
 clean:
 	docker-compose down -v
 	rm -f .env
-	mvn clean
+	./mvnw clean
