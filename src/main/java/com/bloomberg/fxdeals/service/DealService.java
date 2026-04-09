@@ -67,7 +67,7 @@ public class DealService {
                 switch (response.status()) {
                     case SAVED -> succeeded++;
                     case DUPLICATE -> duplicates++;
-                    case ERROR -> failures++;
+                    default -> failures++; // in case of ERROR
                 }
             } catch (Exception ex) {
                 log.error("Severe batch failure on item {}: {}", request.dealUniqueId(), ex.getMessage());
